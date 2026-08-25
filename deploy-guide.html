@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hugo 博客部署指南</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    line-height: 1.8;
+    padding: 0;
+  }
+  .header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 48px 24px;
+    text-align: center;
+  }
+  .header h1 { font-size: 28px; margin-bottom: 8px; }
+  .header p { opacity: 0.9; font-size: 15px; }
+  .container {
+    max-width: 860px;
+    margin: -24px auto 48px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 40px 36px;
+  }
+  h2 {
+    font-size: 22px;
+    color: #1a1a2e;
+    margin: 36px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e8e8e8;
+  }
+  h2 .num {
+    display: inline-block;
+    background: #667eea;
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-size: 15px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  h3 {
+    font-size: 17px;
+    color: #333;
+    margin: 20px 0 10px;
+  }
+  p { margin: 8px 0; font-size: 15px; }
+  ul, ol { margin: 8px 0 8px 20px; }
+  li { margin: 4px 0; font-size: 15px; }
+  code {
+    background: #f0f0f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+    font-size: 13px;
+    color: #e83e8c;
+  }
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+  .note {
+    background: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 12px 0;
+  }
+  .note code { color: #e65100; }
+  .tip {
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 12px 0;
+  }
+  .warn {
+    background: #ffebee;
+    border-left: 4px solid #f44336;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 12px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th {
+    background: #f5f5f5;
+    font-weight: 600;
+  }
+  .toc {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+  .toc h2 { border: none; margin: 0 0 12px; font-size: 18px; }
+  .toc ol { margin-left: 20px; }
+  .toc a { color: #667eea; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .footer {
+    text-align: center;
+    padding: 24px;
+    color: #999;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Hugo 博客部署指南</h1>
+  <p>Hugo + PaperMod + GitHub Pages + Cloudflare 完整部署流程</p>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <h2>目录</h2>
+    <ol>
+      <li><a href="#structure">项目结构说明</a></li>
+      <li><a href="#customize">个性化配置</a></li>
+      <li><a href="#github">推送到 GitHub 仓库</a></li>
+      <li><a href="#pages">配置 GitHub Pages</a></li>
+      <li><a href="#cloudflare">配置 Cloudflare DNS</a></li>
+      <li><a href="#ssl">Cloudflare SSL 配置</a></li>
+      <li><a href="#write">日常写文章流程</a></li>
+      <li><a href="#troubleshoot">常见问题</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. 项目结构 -->
+  <h2 id="structure"><span class="num">1</span>项目结构说明</h2>
+  <pre><code>blog/
+├── .github/workflows/
+│   └── hugo.yml              # GitHub Actions 自动部署
+├── archetypes/                # 文章模板
+│   └── default.md
+├── content/                   # ← 你的文章都在这里
+│   ├── about.md               # 关于页面
+│   ├── friends.md             # 友链页面
+│   ├── search.md              # 搜索页面
+│   ├── archives.md            # 归档页面
+│   └── posts/                # 博客文章
+│       ├── welcome/index.md
+│       ├── hugo-github-pages-cloudflare/index.md
+│       └── hugo-commands/index.md
+├── static/                    # 静态资源 (CNAME 在这里)
+│   └── CNAME                  # ← 填入你的域名
+├── themes/
+│   └── PaperMod.git/          # PaperMod 主题 (子模块)
+├── hugo.yaml                  # ← 站点配置文件 (核心)
+└── .gitignore</code></pre>
+
+  <!-- 2. 个性化配置 -->
+  <h2 id="customize"><span class="num">2</span>个性化配置</h2>
+  <p>打开 <code>hugo.yaml</code>，修改以下带 <code>TODO</code> 标记的内容：</p>
+
+  <h3>基本设置</h3>
+  <pre><code># 站点标题和域名
+baseURL: "https://www.yourdomain.com/"  # ← 替换为你的域名
+title: "你的博客名称"                      # ← 替换为你的博客名
+params:
+  author: "你的名字"                      # ← 替换为你的名字
+  description: "你的博客描述"
+  homeInfoParams:
+    Title: "你好 👋"
+    Content: "首页欢迎语"                # ← 自定义首页内容</code></pre>
+
+  <h3>社交链接</h3>
+  <pre><code>socialIcons:
+  - name: "github"
+    url: "https://github.com/你的用户名"  # ← 替换
+  - name: "email"
+    url: "mailto:你的邮箱@example.com"     # ← 替换</code></pre>
+
+  <h3>CNAME 文件</h3>
+  <p>编辑 <code>static/CNAME</code>，写入你的域名：</p>
+  <pre><code>www.yourdomain.com</code></pre>
+
+  <div class="note">
+    <strong>提示：</strong>如果你的域名是裸域 (如 <code>yourdomain.com</code>)，CNAME 文件写裸域；如果用 <code>www</code> 子域，就写 <code>www.yourdomain.com</code>。
+  </div>
+
+  <!-- 3. 推送到 GitHub -->
+  <h2 id="github"><span class="num">3</span>推送到 GitHub 仓库</h2>
+  <p>你已有 GitHub 仓库，只需把博客项目推上去：</p>
+
+  <h3>方式一：推送到现有仓库（覆盖）</h3>
+  <div class="warn">
+    <strong>注意：</strong>如果你的仓库已有其他内容，请先备份！以下命令会覆盖远程仓库内容。
+  </div>
+  <pre><code>cd blog
+
+# 添加远程仓库 (替换为你的仓库地址)
+git remote add origin https://github.com/你的用户名/你的仓库.git
+
+# 提交所有文件
+git add .
+git commit -m "初始化 Hugo 博客"
+
+# 强制推送 (如果仓库已有内容)
+git push -u origin main --force</code></pre>
+
+  <h3>方式二：推送到空仓库</h3>
+  <pre><code>cd blog
+git remote add origin https://github.com/你的用户名/你的仓库.git
+git add .
+git commit -m "初始化 Hugo 博客"
+git push -u origin main</code></pre>
+
+  <div class="tip">
+    <strong>主题是子模块：</strong>推送后，在 GitHub 仓库页面会看到 <code>themes/PaperMod.git</code> 指向原仓库。这是正常的。GitHub Actions 部署时会自动拉取主题。
+  </div>
+
+  <!-- 4. GitHub Pages -->
+  <h2 id="pages"><span class="num">4</span>配置 GitHub Pages</h2>
+  <ol>
+    <li>进入你的 GitHub 仓库 → <strong>Settings</strong></li>
+    <li>左侧菜单找到 <strong>Pages</strong></li>
+    <li><strong>Source</strong> 选择 <strong>GitHub Actions</strong></li>
+    <li>推送代码后，Actions 会自动构建部署</li>
+    <li>在 <strong>Actions</strong> 标签页可以看到构建日志</li>
+  </ol>
+  <div class="note">
+    <strong>重要：</strong>不要选择 "Deploy from a branch"，必须选 <strong>GitHub Actions</strong>，因为我们用的是 Actions 自动部署。
+  </div>
+
+  <!-- 5. Cloudflare DNS -->
+  <h2 id="cloudflare"><span class="num">5</span>配置 Cloudflare DNS</h2>
+  <p>你已将域名托管到 Cloudflare，需要添加 DNS 记录指向 GitHub Pages。</p>
+
+  <h3>方案 A：使用 www 子域（推荐）</h3>
+  <table>
+    <tr><th>类型</th><th>名称</th><th>内容</th><th>代理</th></tr>
+    <tr><td>CNAME</td><td>www</td><td>你的用户名.github.io</td><td>仅 DNS (灰色)</td></tr>
+    <tr><td>CNAME</td><td>@</td><td>你的用户名.github.io</td><td>仅 DNS (灰色)</td></tr>
+  </table>
+
+  <h3>方案 B：使用裸域</h3>
+  <table>
+    <tr><th>类型</th><th>名称</th><th>内容</th><th>代理</th></tr>
+    <tr><td>A</td><td>@</td><td>185.199.108.153</td><td>仅 DNS (灰色)</td></tr>
+    <tr><td>A</td><td>@</td><td>185.199.109.153</td><td>仅 DNS (灰色)</td></tr>
+    <tr><td>A</td><td>@</td><td>185.199.110.153</td><td>仅 DNS (灰色)</td></tr>
+    <tr><td>A</td><td>@</td><td>185.199.111.153</td><td>仅 DNS (灰色)</td></tr>
+    <tr><td>CNAME</td><td>www</td><td>你的用户名.github.io</td><td>仅 DNS (灰色)</td></tr>
+  </table>
+
+  <div class="warn">
+    <strong>关于 Cloudflare 代理 (橙色云朵)：</strong>
+    <p>如果开启 Cloudflare 代理 (橙色云朵)，SSL 模式必须设为 <strong>Full</strong> 或 <strong>Full (Strict)</strong>，否则会出现重定向循环。</p>
+    <p>如果你不确定，先使用 <strong>仅 DNS (灰色云朵)</strong>，网站正常后再开启代理。</p>
+  </div>
+
+  <!-- 6. SSL -->
+  <h2 id="ssl"><span class="num">6</span>Cloudflare SSL 配置</h2>
+  <ol>
+    <li>Cloudflare 面板 → <strong>SSL/TLS</strong> → <strong>Overview</strong></li>
+    <li>加密模式选择 <strong>Full</strong>（如果开启代理）或 <strong>Flexible</strong>（如果仅 DNS）</li>
+    <li>进入 <strong>SSL/TLS</strong> → <strong>Edge Certificates</strong></li>
+    <li>开启 <strong>Always Use HTTPS</strong></li>
+    <li>开启 <strong>Automatic HTTPS Rewrites</strong></li>
+    <li>开启 <strong>HSTS</strong>（可选，增强安全性）</li>
+  </ol>
+
+  <div class="tip">
+    <strong>GitHub Pages 自动签发 SSL：</strong>GitHub Pages 会自动为绑定的域名签发 Let's Encrypt 证书。首次绑定时可能需要等待几分钟到几小时。
+  </div>
+
+  <!-- 7. 日常写文章 -->
+  <h2 id="write"><span class="num">7</span>日常写文章流程</h2>
+  <pre><code># 1. 创建新文章
+cd blog
+hugo new content posts/my-new-post/index.md
+
+# 2. 编辑文章内容 (使用任何编辑器)
+#    修改 front matter 中的 draft: false 表示正式发布
+
+# 3. 本地预览
+hugo server -D
+
+# 4. 提交推送
+git add .
+git commit -m "发布新文章: 文章标题"
+git push
+
+# 5. GitHub Actions 自动构建部署 ✅
+#    几分钟后访问你的域名即可看到新文章</code></pre>
+
+  <h3>Front Matter 说明</h3>
+  <pre><code>---
+title: "文章标题"
+date: 2026-08-25T17:00:00+08:00
+draft: false                # false = 正式发布, true = 草稿
+summary: "一句话摘要"
+tags: ["标签1", "标签2"]
+categories: ["分类"]
+cover:
+  image: "images/cover.jpg"  # 封面图片
+  alt: "封面描述"
+---</code></pre>
+
+  <!-- 8. 常见问题 -->
+  <h2 id="troubleshoot"><span class="num">8</span>常见问题</h2>
+
+  <h3>Q: 推送后 GitHub Actions 报错？</h3>
+  <ul>
+    <li>检查 <code>.github/workflows/hugo.yml</code> 中 <code>HUGO_VERSION</code> 是否与本地一致</li>
+    <li>确保仓库 Settings → Pages → Source 选的是 <strong>GitHub Actions</strong></li>
+    <li>检查 Actions 日志中的具体报错信息</li>
+  </ul>
+
+  <h3>Q: 域名访问显示 404？</h3>
+  <ul>
+    <li>检查 <code>static/CNAME</code> 文件中的域名是否与 GitHub Pages 设置一致</li>
+    <li>GitHub Settings → Pages 中确认 Custom domain 已正确填写</li>
+    <li>等待 DNS 生效 (可能需要几分钟)</li>
+  </ul>
+
+  <h3>Q: HTTPS 访问出现重定向循环？</h3>
+  <ul>
+    <li>Cloudflare SSL/TLS 模式改为 <strong>Full</strong></li>
+    <li>或暂时关闭 Cloudflare 代理 (灰色云朵)</li>
+  </ul>
+
+  <h3>Q: 文章没有出现在首页？</h3>
+  <ul>
+    <li>检查文章 front matter 中 <code>draft: false</code></li>
+    <li>检查文章的 <code>date</code> 是否是未来时间 (未来时间的文章默认不显示)</li>
+    <li>本地预览用 <code>hugo server -D</code> 可以看到草稿</li>
+  </ul>
+
+  <h3>Q: 如何更换主题？</h3>
+  <pre><code># 删除旧主题
+git rm themes/PaperMod.git
+# 添加新主题
+git submodule add https://github.com/作者/主题名 themes/新主题名
+# 修改 hugo.yaml 中的 theme 字段</code></pre>
+
+</div>
+
+<div class="footer">
+  Generated by WorkBuddy · Hugo v0.165.0 Extended · PaperMod Theme
+</div>
+
+</body>
+</html>

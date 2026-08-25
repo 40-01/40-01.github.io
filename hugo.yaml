@@ -1,0 +1,156 @@
+# ============================================================
+# Hugo 站点配置文件
+# 主题: PaperMod (https://github.com/adityatelange/hugo-PaperMod)
+# ============================================================
+
+# --- 基础设置 ---
+baseURL: "https://781398839.xyz/"      # TODO: 替换为你的实际域名
+locale: "zh-cn"
+title: "有点搞，，，"                    # TODO: 替换为你的博客名称
+theme: "PaperMod.git"
+defaultContentLanguage: "zh"
+timeZone: "Asia/Shanghai"
+enableRobotsTXT: true
+enableEmoji: true
+
+# --- 分页 ---
+pagination:
+  pageSize: 10
+
+# --- 菜单导航 ---
+menus:
+  main:
+    - name: "首页"
+      url: "/"
+      weight: 1
+    - name: "归档"
+      url: "/archives/"
+      weight: 5
+    - name: "标签"
+      url: "/tags/"
+      weight: 10
+    - name: "搜索"
+      url: "/search/"
+      weight: 15
+    - name: "关于"
+      url: "/about/"
+      weight: 20
+    - name: "友链"
+      url: "/friends/"
+      weight: 25
+
+# --- PaperMod 主题参数 ---
+params:
+  # 站点信息
+  author: "40-01"                       # TODO: 替换为你想显示的名字
+  description: "充能面包"
+  defaultTheme: auto                    # auto | light | dark
+  ShowShareButtons: true
+  ShowReadingTime: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowToc: true                        # 显示目录
+  TocOpen: false                       # 目录默认折叠
+
+  # 首页设置
+  homeInfoParams:
+    Title: "你好 👋"
+    Content: "扣1送小布丁"
+
+  # 社交链接 (TODO: 替换为你的社交账号)
+  socialIcons:
+    - name: "github"
+      url: "https://github.com/40-01"
+    - name: "email"
+      url: "mailto:781398839@qq.com"
+
+  # 搜索功能
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    limit: 10
+    ignoreLocation: true
+
+  # SEO
+  env: production
+  EditURL: ""
+  hideSummary: false
+  disableAnchoredHeadings: false
+
+  # 封面图片
+  cover:
+    linkFullImages: true
+    responsiveImages: true
+
+  # 图片放大
+  imageZoom: true
+
+# --- 搜索页面 (PaperMod 搜索) ---
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON                          # 搜索功能需要 JSON 输出
+
+# --- Markdown 渲染设置 ---
+markup:
+  goldmark:
+    extensions:
+      definitionList: true
+      footnote: true
+      linkify: true
+      strikethrough: true
+      table: true
+      taskList: true
+    parser:
+      autoHeadingID: true
+      autoHeadingIDType: github
+    renderer:
+      hardWraps: false
+      unsafe: true                  # 允许 HTML 标签
+      xhtml: false
+  highlight:
+    codeFences: true
+    guessSyntax: true
+    lineNos: true
+    lineNumbersInTable: false
+    noClasses: false
+    tabWidth: 2
+    style: "monokai"
+
+# --- 隐私设置 (GitHub Pages 部署用) ---
+privacy:
+  googleAnalytics:
+    disable: true
+  youtube:
+    privacyY: true
+
+# --- 永久链接格式 ---
+permalinks:
+  posts: "/posts/:year/:month/:day/:filename/"
+
+# --- RSS 设置 ---
+rss:
+  limit: 20
+
+# --- 模块设置 ---
+module:
+  noVendor: ""
+
+# --- 安全设置 ---
+security:
+  enableInlineShortcodes: false
+  exec:
+    allow: ["^dart-sass$", "^go$", "^npx$", "^postcss$", "^asciidoctor$"]
+    osEnv: ["(?i)^((HTTPS?|NO)_PROXY|CI|GITHUB_KEY|TOKEN|PATH)$"]
+  funcs:
+    getEnv: ["^HUGO_", "^CI$"]
+  http:
+    methods: ["(?i)GET|HEAD"]
+    urls: [".*"]

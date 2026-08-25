@@ -1,0 +1,23 @@
+# Hugo 输出目录
+/public/
+/resources/
+
+# Hugo 缓存
+.hugo_build.lock
+
+# 临时文件
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE 文件
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 系统文件
+.DS_Store
+ehthumbs.db
