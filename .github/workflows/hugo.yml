@@ -42,6 +42,7 @@ jobs:
           fetch-depth: 0      # 获取完整历史 (Hugo 最后修改时间需要)
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
 
       - name: Build with Hugo
