@@ -4,7 +4,7 @@
 # ============================================================
 
 # --- 基础设置 ---
-baseURL: "https://781398839.xyz/"      # TODO: 替换为你的实际域名
+baseURL: "https://www.781398839.xyz/"  # 与 CNAME 保持一致
 locale: "zh-cn"
 title: "有点搞，，，"                    # TODO: 替换为你的博客名称
 theme: "PaperMod.git"
@@ -45,7 +45,7 @@ params:
   author: "40-01"                       # TODO: 替换为你想显示的名字
   description: "充能面包"
   defaultTheme: auto                    # auto | light | dark
-  ShowShareButtons: true
+  ShowShareButtons: false              # 隐藏文章底部分享按钮
   ShowReadingTime: true
   ShowPostNavLinks: true
   ShowBreadCrumbs: true

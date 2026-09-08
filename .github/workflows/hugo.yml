@@ -46,7 +46,8 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build with Hugo
-        run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}/"
+        # baseURL 直接取自 hugo.yaml 中的自定义域名，避免 configure-pages 覆盖为 http 地址
+        run: hugo --minify
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
